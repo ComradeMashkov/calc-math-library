@@ -1,0 +1,11 @@
+Checks: >
+    *,
+    -altera-*,
+    -llvm-*,
+    -llvmlibc-*,
+    -bugprone-easily-swappable-parameters,
+    -modernize-use-trailing-return-type,
+    -readability-identifier-length,
+    -misc-no-recursion
+WarningsAsErrors: '*'
+HeaderFilterRegex: '.*'
