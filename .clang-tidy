@@ -6,6 +6,7 @@ Checks: >
     -bugprone-easily-swappable-parameters,
     -modernize-use-trailing-return-type,
     -readability-identifier-length,
-    -misc-no-recursion
+    -misc-no-recursion,
+    -misc-include-cleaner
 WarningsAsErrors: '*'
 HeaderFilterRegex: '.*'
