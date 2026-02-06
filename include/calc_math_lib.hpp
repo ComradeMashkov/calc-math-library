@@ -16,6 +16,7 @@ enum class ErrorCode : std::uint8_t {
 };
 
 static ErrorCode check_result(double r);
+const char *err_to_str(ErrorCode ec);
 
 ErrorCode add(std::int64_t x, std::int64_t y, double &res);
 ErrorCode sub(std::int64_t x, std::int64_t y, double &res);

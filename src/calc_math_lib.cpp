@@ -9,6 +9,19 @@ ErrorCode check_result(double r) {
     return ErrorCode::OK;
 }
 
+const char *err_to_str(ErrorCode ec) {
+    switch (ec) {
+    case ErrorCode::DIVISION_BY_ZERO:
+        return "Division by zero cannot be executed";
+    case ErrorCode::FACTORIAL_OF_NEGATIVE_NUMBER:
+        return "Factorial of negative number cannot be executed";
+    case ErrorCode::TYPE_OVERFLOW:
+        return "Type overflow";
+    default:
+        return "None";
+    }
+}
+
 ErrorCode add(std::int64_t x, std::int64_t y, double &res) {
     res = static_cast<double>(x) + static_cast<double>(y);
     return check_result(res);
