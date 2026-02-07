@@ -2,7 +2,7 @@
 
 namespace mathlib {
 
-ErrorCode check_result(double r) {
+ErrorCode check_double(double r) {
     if (r > DBL_MAX || r < -DBL_MAX) {
         return ErrorCode::TYPE_OVERFLOW;
     }
@@ -22,19 +22,45 @@ const char *err_to_str(ErrorCode ec) {
     }
 }
 
-ErrorCode add(std::int64_t x, std::int64_t y, double &res) {
-    res = static_cast<double>(x) + static_cast<double>(y);
-    return check_result(res);
+ErrorCode add(std::int64_t x, std::int64_t y, std::int64_t &res) {
+    if ((y > 0 && x > INT64_MAX - y) || (y < 0 && x < INT64_MIN - y)) {
+        return ErrorCode::TYPE_OVERFLOW;
+    }
+    res = x + y;
+    return ErrorCode::OK;
 }
 
-ErrorCode sub(std::int64_t x, std::int64_t y, double &res) {
-    res = static_cast<double>(x) - static_cast<double>(y);
-    return check_result(res);
+ErrorCode sub(std::int64_t x, std::int64_t y, std::int64_t &res) {
+    if ((y > 0 && x < INT64_MIN + y) || (y < 0 && x > INT64_MAX + y)) {
+        return ErrorCode::TYPE_OVERFLOW;
+    }
+    res = x - y;
+    return ErrorCode::OK;
 }
 
-ErrorCode mul(std::int64_t x, std::int64_t y, double &res) {
-    res = static_cast<double>(x) * static_cast<double>(y);
-    return check_result(res);
+ErrorCode mul(std::int64_t x, std::int64_t y, std::int64_t &res) {
+    if (x == 0 || y == 0) {
+        res = 0;
+        return ErrorCode::OK;
+    }
+    if ((x == -1 && y == INT64_MIN) || (y == -1 && x == INT64_MIN)) {
+        return ErrorCode::TYPE_OVERFLOW;
+    }
+
+    bool overflow = false;
+
+    if (x > 0) {
+        overflow = (y > 0) ? (x > INT64_MAX / y) : (y < INT64_MIN / x);
+    } else {
+        overflow = (y > 0) ? (x < INT64_MIN / y) : (y < INT64_MAX / x);
+    }
+
+    if (overflow) {
+        return ErrorCode::TYPE_OVERFLOW;
+    }
+
+    res = x * y;
+    return ErrorCode::OK;
 }
 
 ErrorCode div(std::int64_t x, std::int64_t y, double &res) {
@@ -43,7 +69,7 @@ ErrorCode div(std::int64_t x, std::int64_t y, double &res) {
     }
 
     res = static_cast<double>(x) / static_cast<double>(y);
-    return check_result(res);
+    return check_double(res);
 }
 
 ErrorCode pow(std::int64_t x, std::int64_t y, double &res) {
@@ -65,7 +91,7 @@ ErrorCode pow(std::int64_t x, std::int64_t y, double &res) {
 
     for (int64_t i = 0L; i < exp; ++i) {
         r *= static_cast<double>(x);
-        if (check_result(r) == ErrorCode::TYPE_OVERFLOW) {
+        if (check_double(r) == ErrorCode::TYPE_OVERFLOW) {
             return ErrorCode::TYPE_OVERFLOW;
         }
     }
@@ -75,33 +101,31 @@ ErrorCode pow(std::int64_t x, std::int64_t y, double &res) {
     }
 
     res = r;
-
     return ErrorCode::OK;
 }
 
-ErrorCode fac(std::int64_t x, double &res) {
+ErrorCode fac(std::int64_t x, std::int64_t &res) {
     if (x < 0L) {
         return ErrorCode::FACTORIAL_OF_NEGATIVE_NUMBER;
     }
 
-    // Assume that 170! is the upper boundary for double overflow :)
-    if (x > static_cast<std::int64_t>(FACTORIAL_MAX_BASE)) {
+    // Assume that 20! is the upper boundary for int64 overflow :)
+    if (x > FACTORIAL_MAX_BASE) {
         return ErrorCode::TYPE_OVERFLOW;
     }
 
     if ((x == 0L) || (x == 1L)) {
-        res = 1.0;
+        res = 1L;
         return ErrorCode::OK;
     }
 
-    auto prev_res = 0.0;
+    std::int64_t prev_res = 0L;
     const ErrorCode ec = fac(x - 1, prev_res);
     if (ec != ErrorCode::OK) {
         return ec;
     }
 
-    res = static_cast<double>(x) * prev_res;
-
+    res = x * prev_res;
     return ErrorCode::OK;
 }
 

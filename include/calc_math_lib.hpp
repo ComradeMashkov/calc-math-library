@@ -5,7 +5,7 @@
 namespace mathlib {
 
 constexpr double DBL_MAX = 1e308;
-constexpr std::uint8_t FACTORIAL_MAX_BASE = 170;
+constexpr std::int64_t FACTORIAL_MAX_BASE = 20;
 
 enum class ErrorCode : std::uint8_t {
     NONE,
@@ -15,14 +15,14 @@ enum class ErrorCode : std::uint8_t {
     TYPE_OVERFLOW
 };
 
-static ErrorCode check_result(double r);
+static ErrorCode check_double(double r);
 const char *err_to_str(ErrorCode ec);
 
-ErrorCode add(std::int64_t x, std::int64_t y, double &res);
-ErrorCode sub(std::int64_t x, std::int64_t y, double &res);
-ErrorCode mul(std::int64_t x, std::int64_t y, double &res);
+ErrorCode add(std::int64_t x, std::int64_t y, std::int64_t &res);
+ErrorCode sub(std::int64_t x, std::int64_t y, std::int64_t &res);
+ErrorCode mul(std::int64_t x, std::int64_t y, std::int64_t &res);
 ErrorCode div(std::int64_t x, std::int64_t y, double &res);
 ErrorCode pow(std::int64_t x, std::int64_t y, double &res);
-ErrorCode fac(std::int64_t x, double &res);
+ErrorCode fac(std::int64_t x, std::int64_t &res);
 
 } // namespace mathlib
