@@ -2,131 +2,118 @@
 
 namespace mathlib {
 
-ErrorCode check_double(double r) {
-    if (r > DBL_MAX || r < -DBL_MAX) {
-        return ErrorCode::TYPE_OVERFLOW;
-    }
-    return ErrorCode::OK;
+bool Utils::check_double(double r) {
+    return r <= Utils::DBL_MAX && r >= -Utils::DBL_MAX;
 }
 
-const char *err_to_str(ErrorCode ec) {
-    switch (ec) {
-    case ErrorCode::DIVISION_BY_ZERO:
-        return "Division by zero cannot be executed";
-    case ErrorCode::FACTORIAL_OF_NEGATIVE_NUMBER:
-        return "Factorial of negative number cannot be executed";
-    case ErrorCode::TYPE_OVERFLOW:
-        return "Type overflow";
-    default:
-        return "None";
-    }
+std::int64_t IntMath::value() const {
+    return val_;
 }
 
-ErrorCode add(std::int64_t x, std::int64_t y, std::int64_t &res) {
-    if ((y > 0 && x > INT64_MAX - y) || (y < 0 && x < INT64_MIN - y)) {
-        return ErrorCode::TYPE_OVERFLOW;
+IntMath IntMath::add(const IntMath &rhs) const {
+    if ((rhs.val_ > 0L && val_ > INT64_MAX - rhs.val_) ||
+        (rhs.val_ < 0 && val_ < INT64_MIN - rhs.val_)) {
+        throw std::runtime_error("Type overflow occurred");
     }
-    res = x + y;
-    return ErrorCode::OK;
+
+    const std::int64_t out = val_ + rhs.val_;
+    return IntMath(out);
 }
 
-ErrorCode sub(std::int64_t x, std::int64_t y, std::int64_t &res) {
-    if ((y > 0 && x < INT64_MIN + y) || (y < 0 && x > INT64_MAX + y)) {
-        return ErrorCode::TYPE_OVERFLOW;
+IntMath IntMath::sub(const IntMath &rhs) const {
+    if ((rhs.val_ > 0 && val_ < INT64_MIN + rhs.val_) ||
+        (rhs.val_ < 0 && val_ > INT64_MAX + rhs.val_)) {
+        throw std::runtime_error("Type overflow occurred");
     }
-    res = x - y;
-    return ErrorCode::OK;
+
+    const std::int64_t out = val_ - rhs.val_;
+    return IntMath(out);
 }
 
-ErrorCode mul(std::int64_t x, std::int64_t y, std::int64_t &res) {
-    if (x == 0 || y == 0) {
-        res = 0;
-        return ErrorCode::OK;
-    }
-    if ((x == -1 && y == INT64_MIN) || (y == -1 && x == INT64_MIN)) {
-        return ErrorCode::TYPE_OVERFLOW;
+IntMath IntMath::mul(const IntMath &rhs) const {
+    if ((val_ == -1 && rhs.val_ == INT64_MIN) || (rhs.val_ == -1 && val_ == INT64_MIN)) {
+        throw std::runtime_error("Type overflow occurred");
     }
 
     bool overflow = false;
 
-    if (x > 0) {
-        overflow = (y > 0) ? (x > INT64_MAX / y) : (y < INT64_MIN / x);
+    if (val_ > 0) {
+        overflow = (rhs.val_ > 0) ? (val_ > INT64_MAX / rhs.val_) : (rhs.val_ < INT64_MIN / val_);
     } else {
-        overflow = (y > 0) ? (x < INT64_MIN / y) : (y < INT64_MAX / x);
+        overflow = (rhs.val_ > 0) ? (val_ < INT64_MIN / rhs.val_) : (rhs.val_ < INT64_MAX / val_);
     }
 
     if (overflow) {
-        return ErrorCode::TYPE_OVERFLOW;
+        throw std::runtime_error("Type overflow occurred");
     }
 
-    res = x * y;
-    return ErrorCode::OK;
+    const std::int64_t out = val_ * rhs.val_;
+    return IntMath(out);
 }
 
-ErrorCode div(std::int64_t x, std::int64_t y, double &res) {
-    if (y == 0L) {
-        return ErrorCode::DIVISION_BY_ZERO;
+DblMath IntMath::div(const IntMath &rhs) const {
+    if (rhs.val_ == 0L) {
+        throw std::runtime_error("No division by zero");
     }
 
-    res = static_cast<double>(x) / static_cast<double>(y);
-    return check_double(res);
+    const double out = static_cast<double>(val_) / static_cast<double>(rhs.val_);
+    if (const bool ok = Utils::check_double(out); !ok) {
+        throw std::runtime_error("Type overflow occurred");
+    }
+    return DblMath(out);
 }
 
-ErrorCode pow(std::int64_t x, std::int64_t y, double &res) {
-    if (y == 0L) {
-        res = 1.0;
-        return ErrorCode::OK;
+DblMath IntMath::pow(const IntMath &rhs) const {
+    if (rhs.val_ == 0L) {
+        return DblMath(1.0);
     }
 
-    if (x == 0L) {
-        if (y < 0L) {
-            return ErrorCode::DIVISION_BY_ZERO;
+    if (val_ == 0L) {
+        if (rhs.val_ < 0L) {
+            throw std::runtime_error("No division by zero");
         }
-        res = 0.0;
-        return ErrorCode::OK;
+        return DblMath(0.0);
     }
 
     double r = 1.0;
-    const std::int64_t exp = (y < 0L) ? -y : y;
+    const std::int64_t exp = (rhs.val_ < 0L) ? -rhs.val_ : rhs.val_;
 
     for (int64_t i = 0L; i < exp; ++i) {
-        r *= static_cast<double>(x);
-        if (check_double(r) == ErrorCode::TYPE_OVERFLOW) {
-            return ErrorCode::TYPE_OVERFLOW;
+        r *= static_cast<double>(val_);
+        if (const bool ok = Utils::check_double(r); !ok) {
+            throw std::runtime_error("Type overflow occurred");
         }
     }
 
-    if (y < 0L) {
+    if (rhs.val_ < 0L) {
         r = 1.0 / r;
     }
 
-    res = r;
-    return ErrorCode::OK;
+    return DblMath(r);
 }
 
-ErrorCode fac(std::int64_t x, std::int64_t &res) {
-    if (x < 0L) {
-        return ErrorCode::FACTORIAL_OF_NEGATIVE_NUMBER;
+IntMath IntMath::fac() const {
+    if (val_ < 0L) {
+        throw std::runtime_error("No factorial of negative number");
     }
 
     // Assume that 20! is the upper boundary for int64 overflow :)
-    if (x > FACTORIAL_MAX_BASE) {
-        return ErrorCode::TYPE_OVERFLOW;
+    if (val_ > Utils::FACTORIAL_MAX_BASE) {
+        throw std::runtime_error("Type overflow occurred");
     }
 
-    if ((x == 0L) || (x == 1L)) {
-        res = 1L;
-        return ErrorCode::OK;
+    if (val_ == 0L || val_ == 1L) {
+        return IntMath(1L);
     }
 
-    std::int64_t prev_res = 0L;
-    const ErrorCode ec = fac(x - 1, prev_res);
-    if (ec != ErrorCode::OK) {
-        return ec;
+    const IntMath prev = IntMath(val_ - 1L).fac();
+    const std::int64_t p = prev.val_;
+
+    if (p > INT64_MAX / val_) {
+        throw std::runtime_error("Type overflow occurred");
     }
 
-    res = x * prev_res;
-    return ErrorCode::OK;
+    return IntMath(p * val_);
 }
 
 } // namespace mathlib
