@@ -19,6 +19,7 @@ class IntMath {
     explicit IntMath(std::int64_t val = 0L) : val_(val) {}
 
     std::int64_t value() const;
+    void set(std::int64_t val);
 
     IntMath add(const IntMath &rhs) const;
     IntMath sub(const IntMath &rhs) const;
@@ -37,7 +38,8 @@ class DblMath {
   public:
     explicit DblMath(double val = 0.0) : val_(val) {}
 
-    // double value() const;
+    double value() const;
+    void set(double val);
 
   private:
     double val_;

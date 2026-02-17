@@ -10,6 +10,10 @@ std::int64_t IntMath::value() const {
     return val_;
 }
 
+void IntMath::set(std::int64_t val) {
+    val_ = val;
+}
+
 IntMath IntMath::add(const IntMath &rhs) const {
     if ((rhs.val_ > 0L && val_ > INT64_MAX - rhs.val_) ||
         (rhs.val_ < 0 && val_ < INT64_MIN - rhs.val_)) {
@@ -114,6 +118,14 @@ IntMath IntMath::fac() const {
     }
 
     return IntMath(p * val_);
+}
+
+double DblMath::value() const {
+    return val_;
+}
+
+void DblMath::set(double val) {
+    val_ = val;
 }
 
 } // namespace mathlib
