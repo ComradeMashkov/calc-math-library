@@ -17,7 +17,7 @@ void IntMath::set(std::int64_t val) {
 IntMath IntMath::add(const IntMath &rhs) const {
     if ((rhs.val_ > 0L && val_ > INT64_MAX - rhs.val_) ||
         (rhs.val_ < 0 && val_ < INT64_MIN - rhs.val_)) {
-        throw std::runtime_error("Mathlib: Type overflow occurred.\n");
+        throw std::runtime_error("Mathlib: Type overflow occurred.");
     }
 
     const std::int64_t out = val_ + rhs.val_;
@@ -27,7 +27,7 @@ IntMath IntMath::add(const IntMath &rhs) const {
 IntMath IntMath::sub(const IntMath &rhs) const {
     if ((rhs.val_ > 0 && val_ < INT64_MIN + rhs.val_) ||
         (rhs.val_ < 0 && val_ > INT64_MAX + rhs.val_)) {
-        throw std::runtime_error("Mathlib: Type overflow occurred.\n");
+        throw std::runtime_error("Mathlib: Type overflow occurred.");
     }
 
     const std::int64_t out = val_ - rhs.val_;
@@ -36,7 +36,7 @@ IntMath IntMath::sub(const IntMath &rhs) const {
 
 IntMath IntMath::mul(const IntMath &rhs) const {
     if ((val_ == -1 && rhs.val_ == INT64_MIN) || (rhs.val_ == -1 && val_ == INT64_MIN)) {
-        throw std::runtime_error("Mathlib: Type overflow occurred.\n");
+        throw std::runtime_error("Mathlib: Type overflow occurred.");
     }
 
     bool overflow = false;
@@ -48,7 +48,7 @@ IntMath IntMath::mul(const IntMath &rhs) const {
     }
 
     if (overflow) {
-        throw std::runtime_error("Mathlib: Type overflow occurred.\n");
+        throw std::runtime_error("Mathlib: Type overflow occurred.");
     }
 
     const std::int64_t out = val_ * rhs.val_;
@@ -57,12 +57,12 @@ IntMath IntMath::mul(const IntMath &rhs) const {
 
 DblMath IntMath::div(const IntMath &rhs) const {
     if (rhs.val_ == 0L) {
-        throw std::runtime_error("Mathlib: No division by zero.\n");
+        throw std::runtime_error("Mathlib: No division by zero.");
     }
 
     const double out = static_cast<double>(val_) / static_cast<double>(rhs.val_);
     if (const bool ok = Utils::check_double(out); !ok) {
-        throw std::runtime_error("Mathlib: Type overflow occurred.\n");
+        throw std::runtime_error("Mathlib: Type overflow occurred.");
     }
     return DblMath(out);
 }
@@ -74,7 +74,7 @@ DblMath IntMath::pow(const IntMath &rhs) const {
 
     if (val_ == 0L) {
         if (rhs.val_ < 0L) {
-            throw std::runtime_error("Mathlib: No division by zero.\n");
+            throw std::runtime_error("Mathlib: No division by zero.");
         }
         return DblMath(0.0);
     }
@@ -85,7 +85,7 @@ DblMath IntMath::pow(const IntMath &rhs) const {
     for (int64_t i = 0L; i < exp; ++i) {
         r *= static_cast<double>(val_);
         if (const bool ok = Utils::check_double(r); !ok) {
-            throw std::runtime_error("Mathlib: Type overflow occurred.\n");
+            throw std::runtime_error("Mathlib: Type overflow occurred.");
         }
     }
 
@@ -98,12 +98,12 @@ DblMath IntMath::pow(const IntMath &rhs) const {
 
 IntMath IntMath::fac() const {
     if (val_ < 0L) {
-        throw std::runtime_error("Mathlib: No factorial of negative number.\n");
+        throw std::runtime_error("Mathlib: No factorial of negative number.");
     }
 
     // Assume that 20! is the upper boundary for int64 overflow :)
     if (val_ > Utils::FACTORIAL_MAX_BASE) {
-        throw std::runtime_error("Mathlib: Type overflow occurred.\n");
+        throw std::runtime_error("Mathlib: Type overflow occurred.");
     }
 
     if (val_ == 0L || val_ == 1L) {
@@ -114,7 +114,7 @@ IntMath IntMath::fac() const {
     const std::int64_t p = prev.val_;
 
     if (p > INT64_MAX / val_) {
-        throw std::runtime_error("Mathlib: Type overflow occurred.\n");
+        throw std::runtime_error("Mathlib: Type overflow occurred.");
     }
 
     return IntMath(p * val_);
