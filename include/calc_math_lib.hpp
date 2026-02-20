@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <limits>
 #include <stdexcept>
 
 namespace mathlib {
@@ -8,7 +9,7 @@ namespace mathlib {
 class Utils {
   public:
     static bool check_double(double r);
-    static constexpr double DBL_MAX = 1e308;
+    static constexpr double DBL_MAX = std::numeric_limits<double>::max();
     static constexpr std::int64_t FACTORIAL_MAX_BASE = 20;
 };
 
