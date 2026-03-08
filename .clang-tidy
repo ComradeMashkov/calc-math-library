@@ -7,6 +7,8 @@ Checks: >
     -modernize-use-trailing-return-type,
     -readability-identifier-length,
     -misc-no-recursion,
-    -misc-include-cleaner
+    -misc-include-cleaner,
+    -fuchsia-default-arguments-declarations,
+    -modernize-use-nodiscard
 WarningsAsErrors: '*'
 HeaderFilterRegex: '.*'
